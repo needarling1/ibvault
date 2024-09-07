@@ -1,9 +1,17 @@
-import React from 'react'
+import { NavLink } from 'react-router-dom';
 
 const NavButton = ( {text, href} ) => {
   return (
     <div className = "flex justify-start">
-        <a className = "flex relative text-2xl mx-6 cursor-pointer border-solid border-blue-600 hover:text-blue-600 hover:border-b-2" href = {href}>{text}</a> 
+      <NavLink to = {href} 
+               className = {({ isActive }) =>
+        `flex relative text-2xl mx-4 p-3 cursor-pointer rounded
+        ${isActive ? 'bg-gray-900 text-white' : 'bg-white hover:bg-gray-100'}`     
+        
+      }
+      >
+        {text}
+      </NavLink> 
     </div>
   )
 }

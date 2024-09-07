@@ -1,22 +1,20 @@
-import React from 'react'
 import NavButton from './NavButton'
+import LoginButton from './LoginButton';
+
 const NavBar = () => {
   return (
     <div className ="flex h-20 w-full justify-between items-center border-b border-gray-200 border-solid py-5">
-      <div className = "relative text-2xl ml-96">
-        <span>BIWS</span>
+      <div className = "relative ml-96">
+        <NavButton text = "BIWS" href = "/"/>
       </div>
 
       <div className = "flex">
-        <NavButton text = "Questions"/>
-        <NavButton text = "Resources"/>
-        <NavButton text = "Other"/>
-        <NavButton text = "Help"/>
+        <NavButton text = "Questions" href = "/questions"/>
+        <NavButton text = "Resources" href = "/resources"/>
+        <NavButton text = "Other" href = "/other"/>
+        <NavButton text = "Help" href = "/help"/>
       </div>
-
-      <div className = "relative text-2xl mr-96 cursor-pointer">
-        <span>Login</span>
-      </div>
+      <LoginButton />
     </div>
   )
 }
