@@ -9,8 +9,8 @@ const NavBar = () => {
       </div>
 
       <div className = "flex">
-        <NavButton text = "Questions" href = "/questions"/>
-        <NavButton text = "Resources" href = "/resources"/>
+        <NavButton text = "Technicals" href = "/questions"/>
+        <NavButton text = "Behaviorals" href = "/resources"/>
         <NavButton text = "Other" href = "/other"/>
         <NavButton text = "Help" href = "/help"/>
       </div>
