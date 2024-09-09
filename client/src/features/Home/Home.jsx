@@ -4,9 +4,9 @@ const Home = () => {
   return (
     <div className = "flex flex-col w-full h-full">
         <NavBar/>
-        <div className = "flex flex-col relative top-1/4 items-center h-1/2">
-            <h1 className = "text-5xl p-4">Ace your next Investment Banking Interview.</h1>
-            <span className = "text-xl p-4">BIWS is the optimal way to study for technical investment banking interviews, equipped with OpenAI's latest model for an interactive learning experience.</span>
+        <div className = "flex flex-col relative justify-center items-center h-3/4">
+            <h1 className = "md:text-2xl l:text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-5xl text-center p-4">Lock in</h1>
+            <span className = "md:text-sm l:text-m xl:text-l 2xl:text-l 3xl:text-xl 4xl:text-xl text-center p-4 ">BIWS is the optimal way to study for technical investment banking interviews, equipped with OpenAI's latest model for an interactive learning experience.</span>
             <GoToQuestions/>
         </div>
     </div>

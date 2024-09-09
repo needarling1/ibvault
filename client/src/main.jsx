@@ -5,6 +5,7 @@ import './index.css'
 
 import Home from './features/Home/Home'
 import Questions from './features/Questions/Questions'
+import Question from './features/Questions/Question';
 
 const router = createBrowserRouter([
   {
@@ -14,6 +15,10 @@ const router = createBrowserRouter([
   {
     path: "/questions",
     element: <Questions />
+  },
+  {
+    path: "/questions/:id",
+    element: <Question />
   },
 ]);
 

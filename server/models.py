@@ -10,10 +10,12 @@ class Question(db.Model):
     question = db.Column(db.String)
     answer = db.Column(db.String)
 
-    def all_to_dict(self):
+    def to_dict(self):
         return {
             'id': self.id,
             'question_name': self.question_name,
             'topic': self.topic,
-            'difficulty': self.difficulty
+            'difficulty': self.difficulty,
+            'question': self.question,
+            'answer': self.answer
         }

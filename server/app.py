@@ -9,6 +9,7 @@ from flask_migrate import Migrate
 
 from extensions import db
 from routes import questions
+from routes import question
 
 
 load_dotenv()
@@ -22,5 +23,6 @@ def create_app():
     db.init_app(app)
 
     app.register_blueprint(questions)
+    app.register_blueprint(question)
 
     return app

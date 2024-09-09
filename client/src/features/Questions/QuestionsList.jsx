@@ -1,20 +1,27 @@
+import { Link } from 'react-router-dom'
+
 const QuestionsList = ( {questions} ) => {
   return (
     <div>
       <table>
         <thead>
-        <tr>
-                <th scope="col">Title</th>
-                <th scope="col">Topic</th>
-                <th scope="col">Difficulty</th>
+        <tr className = "border border-black border-solid bg-gray-900 text-white">
+                <th scope="col" key="extra-column" aria-label="links" className = "w-0 h-0"></th>
+                <th scope="col" className = "text-xl font-normal pl-4 pr-96 py-2 text-left">Title</th>
+                <th scope="col" className = "text-xl font-normal pl-4 pr-32 py-2">Topic</th>
+                <th scope="col" className = "text-xl font-normal pl-4 pr-10 py-2">Difficulty</th>
               </tr>
         </thead>
         <tbody>
-            {questions.map((question, index) =>
-              <tr key = {index}>
-                <th scope="col">{question.question_name}</th>
-                <th scope="col">{question.topic}</th>
-                <th scope="col">{question.difficulty}</th>
+            {questions.map((question) =>
+              <tr key = {question.id} className = "relative border border-black border-solid cursor-pointer hover:bg-gray-100">
+                    <td>
+                        <Link to = {`/questions/${question.id}`} className = 'absolute top-0 left-0 w-full h-full z-10'></Link>
+                    </td>
+                    <td scope="col" className = "text-xl pl-4 py-2">{question.question_name}</td>
+                    <td scope="col" className = "text-xl pl-4 py-2">{question.topic}</td>
+                    <td scope="col" className = "text-xl pl-4 py-2">{question.difficulty}</td>
+
               </tr>  
             )}
         </tbody>
@@ -23,4 +30,5 @@ const QuestionsList = ( {questions} ) => {
   )
 }
 
-export default QuestionsList;
+export default QuestionsList;/*
+onClick={() => window.location.href = `/questions/${question.id}`} */
