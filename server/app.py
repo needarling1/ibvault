@@ -8,8 +8,8 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 
 from extensions import db
-from routes import questions
-from routes import question
+from routes import questions, question, grade
+
 
 
 load_dotenv()
@@ -24,5 +24,6 @@ def create_app():
 
     app.register_blueprint(questions)
     app.register_blueprint(question)
+    app.register_blueprint(grade)
 
     return app
