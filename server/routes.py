@@ -1,4 +1,5 @@
 import os
+import time
 from dotenv import load_dotenv
 
 from flask import Blueprint, request, jsonify
@@ -32,6 +33,8 @@ def get_questions(id):
 
 @grade.route('/api/questions/grade', methods=['POST'])
 def grade_answer():
+    start = time.time()
+
     data = request.json
 
     question_id = data.get('question_id')
@@ -41,9 +44,11 @@ def grade_answer():
 
     answer = data.get('answer')
 
-    print('miao')
-
     result = gpt_grader(question, answer)
+
+    end = time.time()
+
+    print(end - start)
 
     return jsonify( {'result': result} )
 
