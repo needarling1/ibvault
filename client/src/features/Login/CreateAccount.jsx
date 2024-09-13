@@ -18,7 +18,7 @@ const CreateAccount = () => {
     onSuccess: async (codeResponse) => {
         try {
             const response = await axios.post('/api/google-login', {
-                code: codeResponse.code,
+                codeReponse: codeResponse,
             });
             console.log('Login successful', response.data);
             } catch (error) {

@@ -8,7 +8,7 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 
 from extensions import db
-from routes import questions, question, grade
+from routes import questions, question, grade, login
 
 
 
@@ -25,5 +25,6 @@ def create_app():
     app.register_blueprint(questions)
     app.register_blueprint(question)
     app.register_blueprint(grade)
+    app.register_blueprint(login)
 
     return app

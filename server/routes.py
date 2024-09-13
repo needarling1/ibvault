@@ -16,6 +16,7 @@ env = os.environ
 questions = Blueprint('questions', __name__)
 question = Blueprint('question', __name__)
 grade = Blueprint('grade', __name__)
+login = Blueprint('login', __name__)
 
 @questions.route('/api/questions', methods=['GET'])
 def get_questions():
@@ -30,6 +31,11 @@ def get_questions(id):
 
     question = question.to_dict()
     return question
+
+@login.route('/api/google-login', methods=['POST'])
+def google_login():
+    data = request.json
+    print(data)
 
 @grade.route('/api/questions/grade', methods=['POST'])
 def grade_answer():
