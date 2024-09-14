@@ -17,6 +17,7 @@ const CreateAccount = () => {
     flow: 'auth-code',
     onSuccess: async (codeResponse) => {
         try {
+            console.log(codeResponse);
             const response = await axios.post('/api/google-login', {
                 codeReponse: codeResponse,
             });
