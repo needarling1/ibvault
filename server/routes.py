@@ -2,10 +2,11 @@ import os
 import time
 from dotenv import load_dotenv
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 
-from extensions import db
-from models import Question
+from extensions import db, bcrypt
+from models import Question, User
+from sqlalchemy.exc import IntegrityError
 
 import openai
 from openai import OpenAI
@@ -16,7 +17,10 @@ env = os.environ
 questions = Blueprint('questions', __name__)
 question = Blueprint('question', __name__)
 grade = Blueprint('grade', __name__)
-login = Blueprint('login', __name__)
+logger = Blueprint('login', __name__)
+google_logger = Blueprint('google_login', __name__)
+register = Blueprint('register', __name__)
+
 
 @questions.route('/api/questions', methods=['GET'])
 def get_questions():
@@ -32,14 +36,72 @@ def get_questions(id):
     question = question.to_dict()
     return question
 
-@login.route('/api/google-login', methods=['POST'])
+@register.route('/api/register', methods=['POST'])
+def create_account():
+    data = request.get_json()
+
+    password = data.get('password')
+    email = data.get('email')
+    if not password or not email:
+        return jsonify({'message': 'Username, email, and password are required.'}), 400
+
+    if User.query.filter_by(email=email).first():
+        return jsonify({'message': 'Email already registered.'}), 400
+
+    if len(password) < 8:
+        return jsonify({'message': 'Password must be at least 8 characters long.'}), 400
+
+    try:
+        # Hash the password
+        password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+
+        # Create new user instance
+        new_user = User(email=email, password_hash=password_hash)
+
+        # Add to database
+        db.session.add(new_user)
+        db.session.commit()
+
+        return jsonify({'message': 'User created successfully.'}), 201
+
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({'message': 'Username or email already exists.'}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'An error occurred during registration.'}), 500
+
+@logger.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+
+    email = data.get('email')
+    password = data.get('password')
+    if not email or not password:
+        return jsonify({'message': 'Username and password are required.'}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if user and bcrypt.check_password_hash(user.password_hash, password):
+        session['user_id'] = user.id
+        session['email'] = user.email
+        return jsonify({'message': 'Logged in successfully.'}), 200
+    else:
+        return jsonify({'message': 'Invalid username or password.'}), 401
+
+@google_logger.route('/api/google-login', methods=['POST'])
 def google_login():
+    print(request)
     data = request.json
     print(data)
+    return data
 
 @grade.route('/api/questions/grade', methods=['POST'])
 def grade_answer():
     start = time.time()
+
+    user_id = session.get('user_id')
+
+    print(user_id)
 
     data = request.json
 

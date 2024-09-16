@@ -7,24 +7,33 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_migrate import Migrate
 
-from extensions import db
-from routes import questions, question, grade, login
+from extensions import db, bcrypt
+from routes import questions, question, grade, logger, google_logger, register
 
 
 
 load_dotenv()
 env = os.environ
 
+
 def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = env.get('SQLALCHEMY_DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SECRET_KEY'] = env.get('JWT_SECRET_KEY')
     
     db.init_app(app)
+    bcrypt.init_app(app)
+
+    migrate = Migrate(app, db)
 
     app.register_blueprint(questions)
     app.register_blueprint(question)
     app.register_blueprint(grade)
-    app.register_blueprint(login)
+    app.register_blueprint(logger)
+    app.register_blueprint(google_logger)
+    app.register_blueprint(register)
+
+    CORS(app, supports_credentials=True, origins=['http://localhost:5173'])
 
     return app

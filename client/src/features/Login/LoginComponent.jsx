@@ -2,16 +2,20 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
+import LoginHook from './LoginHook';
 
 const LoginComponent = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [result, setResult] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle login logic here
-    console.log('Email:', email);
-    console.log('Password:', password);
+    let response = await LoginHook( {email: email, password: password} );
+    setResult(response);
+    setEmail('');
+    setPassword('');
   };
 
   const handleGoogleLogin = useGoogleLogin({
@@ -30,6 +34,10 @@ const LoginComponent = () => {
             console.error('Google login failed', error);
         },
     });
+
+  if (result) {
+    console.log(result);
+  }
 
   return (
     <div className="flex w-full items-center justify-center">

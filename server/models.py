@@ -19,3 +19,10 @@ class Question(db.Model):
             'question': self.question,
             'answer': self.answer
         }
+
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(150), nullable=False, unique=True)
+    password_hash = db.Column(db.String(200), nullable=True)
+    google_id = db.Column(db.String(200), nullable=True, unique=True)
