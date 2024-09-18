@@ -1,28 +1,37 @@
 import { useState } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
-import axios from 'axios';
-
+import instance from '../../hooks/AxiosInstance';
+import { Link, useNavigate } from 'react-router-dom';
 import CreateAccountHook from './CreateAccountHook';
+import LoginHook from './LoginHook';
 
 const CreateAccount = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [result, setResult] = useState('');
+  const [error, setError] = useState('');
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle login logic here
     let response = await CreateAccountHook( {email: email, password: password});
-    setResult(response['message']);
+
+    if (response.message === 'User created successfully.') {
+      await LoginHook( {email: email, password: password} );
+      navigate('/');
+    } else {
+      setError(<div className = "text-red-600">{response.message}</div>)
+    }
   };
 
   const handleGoogleLogin = useGoogleLogin({
     flow: 'auth-code',
-    onSuccess: async (codeResponse) => {
+    onSuccess: async (tokenResponse) => {
         try {
-            console.log(codeResponse);
-            const response = await axios.post('/api/google-login', {
-                codeReponse: codeResponse,
+            console.log(tokenResponse);
+            const response = await instance.post('/api/google-login', {
+              tokenResponse: tokenResponse,
             });
             console.log('Login successful', response.data);
             } catch (error) {
@@ -33,10 +42,6 @@ const CreateAccount = () => {
             console.error('Google login failed', error);
         },
     });
-
-  if (result) {
-    console.log(result);
-  }
 
   return (
     <div className="flex w-full items-center justify-center">
@@ -91,6 +96,8 @@ const CreateAccount = () => {
           >
             Sign Up
           </button>
+
+          {error}
 
           <div className="mt-6">
             <button

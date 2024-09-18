@@ -1,4 +1,4 @@
-import instance from "../../AxiosInstance";
+import instance from "../../hooks/AxiosInstance";
 
 async function GradeQuestion( {question_id, answer} ) {
     try {

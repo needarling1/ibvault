@@ -5,10 +5,9 @@ from dotenv import load_dotenv
 from flask import Blueprint, request, jsonify, session
 
 from extensions import db, bcrypt
-from models import Question, User
+from models import Question, User, CompletedQuestions
 from sqlalchemy.exc import IntegrityError
 
-import openai
 from openai import OpenAI
 
 load_dotenv()
@@ -20,14 +19,23 @@ grade = Blueprint('grade', __name__)
 logger = Blueprint('login', __name__)
 google_logger = Blueprint('google_login', __name__)
 register = Blueprint('register', __name__)
+check_auth = Blueprint('check_auth', __name__)
+logout = Blueprint('logout', __name__)
 
 
 @questions.route('/api/questions', methods=['GET'])
 def get_questions():
+    user_id = session.get('user_id')
     questions = Question.query.order_by('id').all()
+    completed_questions = []
+
+    if user_id:
+        completed_questions = CompletedQuestions.query.with_entities(CompletedQuestions.question_id).filter_by(user_id=user_id).all()
+        completed_questions = [q[0] for q in completed_questions]
 
     questions_list = [q.to_dict() for q in questions]
-    return questions_list
+
+    return jsonify({"questions": questions_list, "completed_questions": completed_questions})
 
 @question.route('/api/questions/<int:id>', methods=['GET'])
 def get_questions(id):
@@ -52,13 +60,10 @@ def create_account():
         return jsonify({'message': 'Password must be at least 8 characters long.'}), 400
 
     try:
-        # Hash the password
         password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
 
-        # Create new user instance
         new_user = User(email=email, password_hash=password_hash)
 
-        # Add to database
         db.session.add(new_user)
         db.session.commit()
 
@@ -84,9 +89,29 @@ def login():
     if user and bcrypt.check_password_hash(user.password_hash, password):
         session['user_id'] = user.id
         session['email'] = user.email
-        return jsonify({'message': 'Logged in successfully.'}), 200
+        return jsonify({'message': 'Logged in successfully', 'user': {
+        'id': user.id,
+        'email': user.email
+    }}), 200
     else:
         return jsonify({'message': 'Invalid username or password.'}), 401
+    
+@logout.route('/api/logout', methods=['POST'])
+def logout_session():
+    session.clear()
+    return jsonify({'message': 'success'}), 200
+
+@check_auth.route('/api/check-auth', methods=['GET'])
+def check_authorization():
+    user_id = session.get('user_id')
+    user = User.query.filter_by(id=user_id).first()
+    if user:
+        return jsonify({'message': 'Authorized', 'user': {
+        'id': user.id,
+        'email': user.email
+    }}), 200
+    else:
+        return jsonify({'message': 'Unauthorized'}), 401
 
 @google_logger.route('/api/google-login', methods=['POST'])
 def google_login():
@@ -97,12 +122,6 @@ def google_login():
 
 @grade.route('/api/questions/grade', methods=['POST'])
 def grade_answer():
-    start = time.time()
-
-    user_id = session.get('user_id')
-
-    print(user_id)
-
     data = request.json
 
     question_id = data.get('question_id')
@@ -112,16 +131,14 @@ def grade_answer():
 
     answer = data.get('answer')
 
-    result = gpt_grader(question, answer)
-
-    end = time.time()
-
-    print(end - start)
+    result = gpt_grader(question_id, question, answer)
 
     return jsonify( {'result': result} )
 
-def gpt_grader(question, answer):
-    content = f"question_db: {question['question']} answer_db: {question['answer']} user_answer: {answer}"
+def gpt_grader(question_id, question, answer):
+    user_id = session.get('user_id')
+
+    content = f"question_db: {question['question']} user_answer: {answer}"
 
     client = OpenAI(
         api_key=env.get('API_KEY'),
@@ -142,18 +159,24 @@ def gpt_grader(question, answer):
         assistant_id=env.get('ASSISTANT'),
     )
 
-    print(run.status)
-
     if run.status == 'completed': 
         messages = client.beta.threads.messages.list(
             thread_id=thread.id
         )
-        print(messages)
-    else:
-        print(run.status)
-        print(run.last_error)
 
     last_message = messages.data[0]
     response = last_message.content[0].text.value
+
+    if response == "Correct":
+        existing_entry = CompletedQuestions.query.filter_by(user_id=user_id, question_id=question_id).first()
+        if not existing_entry:
+            new_completion = CompletedQuestions(
+                user_id=user_id,
+                question_id=question_id
+            )
+
+            db.session.add(new_completion)
+            db.session.commit()
+
     
     return response

@@ -6,6 +6,7 @@ import Pagination from './Pagination';
 
 const Questions = () => {
     const [questions, setQuestions] = useState([]);
+    const [completedQuestions, setCompletedQuestions] = useState(new Set());
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage, setPostsPerPage] = useState(20)
     const [loading, setLoading] = useState(true);
@@ -14,8 +15,10 @@ const Questions = () => {
     useEffect(() => {
       const fetchQuestions = async () => {
         try {
-          const data = await GetQuestions(); 
-          setQuestions(data);
+          const data = await GetQuestions();
+          const completedArray = data.completed_questions;
+          setQuestions(data.questions);
+          setCompletedQuestions(new Set(completedArray));
         } catch (error) {
           setError(error.message || 'An error occurred');
         } finally {
@@ -44,7 +47,7 @@ const Questions = () => {
         <NavBar/>
         <div className = "flex flex-col relative top-10 items-center h-1/2">
             <h1 className = "text-4xl p-4">Practice IB Interview Questions</h1>
-            <QuestionsList questions = {currentPosts} />
+            <QuestionsList questions = {currentPosts} completedQuestions = {completedQuestions} />
             <Pagination 
                 totalPosts = {questions.length}
                 postsPerPage = {postsPerPage}

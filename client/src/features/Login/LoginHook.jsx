@@ -1,15 +1,15 @@
-import axios from 'axios';
+import instance from "../../hooks/AxiosInstance";
 
 async function LoginHook( {email, password} ) {
     try {
-        const response = await axios.post('/api/login', {
+        const response = await instance.post('/api/login', {
             email: email,
             password: password
         });
 
         return response.data;
       } catch (error) {
-        console.error(error);
+        return error;
     }
 
 }

@@ -1,29 +1,64 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate} from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
-import axios from 'axios';
+import instance from '../../hooks/AxiosInstance';
+import CheckAuth from '../../hooks/CheckAuth';
 import LoginHook from './LoginHook';
 
 const LoginComponent = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [result, setResult] = useState('');
+  const [error, setError] = useState('');
+  const [auth, setAuth] = useState({
+    authorized: false,
+    loading: true
+  });
+
+  const hasRendered = useRef(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const authorization = async () => {
+      const response = await CheckAuth();
+      if (response) {
+        setAuth({authorized: true, loading: false});
+      } else {
+        setAuth({authorized: false, loading: false});
+
+      }
+    }
+    
+    if (hasRendered.current) {
+      authorization();
+    } else {
+      hasRendered.current = true;
+    }
+    
+  }, [result]);
+
+
+  if (auth.authorized) {
+    return navigate("/questions");
+  }
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle login logic here
     let response = await LoginHook( {email: email, password: password} );
     setResult(response);
-    setEmail('');
     setPassword('');
+    setError(<div className = "text-red-600">Invalid Credentials</div>);
   };
 
   const handleGoogleLogin = useGoogleLogin({
     flow: 'auth-code',
-    onSuccess: async (codeResponse) => {
+    onSuccess: async (tokenResponse) => {
         try {
-            const response = await axios.post('/api/google-login', {
-                code: codeResponse.code,
+            const response = await instance.post('/api/google-login', {
+                code: tokenResponse,
             });
             console.log('Login successful', response.data);
             } catch (error) {
@@ -92,6 +127,8 @@ const LoginComponent = () => {
           >
             Sign In
           </button>
+
+          {error}
 
           <div className="mt-4 flex items-center justify-between">
             <Link to="/create-account" className="text-sm text-blue-500 hover:underline">

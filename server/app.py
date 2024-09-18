@@ -8,7 +8,7 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 
 from extensions import db, bcrypt
-from routes import questions, question, grade, logger, google_logger, register
+from routes import questions, question, grade, logger, google_logger, register, check_auth, logout
 
 
 
@@ -33,6 +33,8 @@ def create_app():
     app.register_blueprint(logger)
     app.register_blueprint(google_logger)
     app.register_blueprint(register)
+    app.register_blueprint(check_auth)
+    app.register_blueprint(logout)
 
     CORS(app, supports_credentials=True, origins=['http://localhost:5173'])
 
