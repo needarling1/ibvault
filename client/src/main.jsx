@@ -4,11 +4,15 @@ import {  createBrowserRouter, RouterProvider, } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import './index.css'
 
+import { AuthProvider } from "./hooks/AuthContext";
+
 import Home from './features/Home/Home'
 import Questions from './features/Questions/Questions'
 import Question from './features/Questions/Question';
 import LoginPage from "./features/Login/LoginPage";
 import CreateAccountPage from "./features/Login/CreateAccountPage";
+import Resources from "./features/Resources/Resources";
+import Support from "./features/Support/Support";
 
 const router = createBrowserRouter([
   {
@@ -31,11 +35,21 @@ const router = createBrowserRouter([
     path: "/questions/:id",
     element: <Question />
   },
+  {
+    path: "/resources",
+    element: <Resources />
+  },
+  {
+    path: "/support",
+    element: <Support />
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+    <AuthProvider>
       <RouterProvider router={router} />
+    </AuthProvider>
   </GoogleOAuthProvider>
 );
 

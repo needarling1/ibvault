@@ -27,13 +27,14 @@ const CreateAccount = () => {
 
   const handleGoogleLogin = useGoogleLogin({
     flow: 'auth-code',
-    onSuccess: async (tokenResponse) => {
+    onSuccess: async (codeResponse) => {
         try {
-            console.log(tokenResponse);
             const response = await instance.post('/api/google-login', {
-              tokenResponse: tokenResponse,
+                code: codeResponse,
             });
-            console.log('Login successful', response.data);
+            if (response.status === 200) {
+              return navigate("/");
+            }
             } catch (error) {
             console.error('Error logging in with Google', error);
             }

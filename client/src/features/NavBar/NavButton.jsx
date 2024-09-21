@@ -5,7 +5,7 @@ const NavButton = ( {text, href} ) => {
     <div className = "flex justify-start">
       <NavLink to = {href} 
                className = {({ isActive }) =>
-        `flex relative text-2xl mx-4 p-3 cursor-pointer rounded
+        `flex flex-grow text-center relative text-l md:text-l l:text-xl xl:text-xl 2xl:text-2xl 3xl:text-2xl 4xl:text-2xl mx-4 p-3 cursor-pointer rounded
         ${isActive ? 'bg-gray-900 text-white' : 'bg-white hover:bg-gray-100'}`     
         
       }

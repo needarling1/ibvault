@@ -1,6 +1,7 @@
 import os
 import time
 from dotenv import load_dotenv
+import requests
 
 from flask import Blueprint, request, jsonify, session
 
@@ -21,6 +22,7 @@ google_logger = Blueprint('google_login', __name__)
 register = Blueprint('register', __name__)
 check_auth = Blueprint('check_auth', __name__)
 logout = Blueprint('logout', __name__)
+
 
 
 @questions.route('/api/questions', methods=['GET'])
@@ -86,13 +88,15 @@ def login():
         return jsonify({'message': 'Username and password are required.'}), 400
 
     user = User.query.filter_by(email=email).first()
-    if user and bcrypt.check_password_hash(user.password_hash, password):
+    if user and user.password_hash and bcrypt.check_password_hash(user.password_hash, password):
         session['user_id'] = user.id
         session['email'] = user.email
         return jsonify({'message': 'Logged in successfully', 'user': {
         'id': user.id,
         'email': user.email
     }}), 200
+    elif user and not user.password_hash:
+        return jsonify({'message': 'Google Login required for this user'}), 401
     else:
         return jsonify({'message': 'Invalid username or password.'}), 401
     
@@ -115,10 +119,63 @@ def check_authorization():
 
 @google_logger.route('/api/google-login', methods=['POST'])
 def google_login():
-    print(request)
-    data = request.json
-    print(data)
-    return data
+    code = request.get_json()
+
+    code = code['code']['code']
+
+    token_url = "https://oauth2.googleapis.com/token"
+
+    data = {
+        'code': code,
+        'client_id': env.get('CLIENT_ID'),
+        'client_secret': env.get('CLIENT_SECRET'),
+        'redirect_uri': env.get('REDIRECT_URI'),
+        'grant_type': 'authorization_code'
+    }
+
+    response = requests.post(token_url, data=data)
+    token_info = response.json()
+    access_token = token_info.get('access_token')
+
+
+    user_info_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    user_info_response = requests.get(user_info_url, headers=headers)
+
+    user_info = user_info_response.json()
+
+    google_id = user_info['id']
+    email = user_info['email']
+
+    user = User.query.filter_by(email=email).first()
+
+    if user:
+        session['user_id'] = user.id
+        session['email'] = user.email
+        user_check = User.query.filter_by(google_id=google_id).first()
+        if not user_check:
+            user.google_id = google_id
+            db.session.commit()
+
+        return jsonify({'message': 'Logged in successfully', 'user': {
+        'id': user.id,
+        'email': user.email
+    }}), 200
+    else:
+        new_user = User(email=email, google_id=google_id)
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        session['user_id'] = new_user.id
+        session['email'] = new_user.email
+        return jsonify({'message': 'Logged in successfully', 'user': {
+        'id': new_user.id,
+        'email': new_user.email
+    }}), 200
+
 
 @grade.route('/api/questions/grade', methods=['POST'])
 def grade_answer():

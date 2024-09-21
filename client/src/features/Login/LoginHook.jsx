@@ -7,7 +7,7 @@ async function LoginHook( {email, password} ) {
             password: password
         });
 
-        return response.data;
+        return response;
       } catch (error) {
         return error;
     }

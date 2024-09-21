@@ -3,6 +3,7 @@ import NavBar from '../NavBar/NavBar';
 import GetQuestions from './GetQuestions';
 import QuestionsList from './QuestionsList';
 import Pagination from './Pagination';
+import Footer from '../Footer/Footer';
 
 const Questions = () => {
     const [questions, setQuestions] = useState([]);
@@ -29,6 +30,10 @@ const Questions = () => {
       fetchQuestions(); 
     }, []);
 
+    useEffect(() => {
+      document.title = 'Questions - IB Vault';
+    }, [])
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -43,9 +48,9 @@ const Questions = () => {
   const currentPosts = questions.slice(firstPostIndex, lastPostIndex)
     
   return (
-    <div className = "flex flex-col w-full h-full">
+    <div className = "flex flex-col w-full min-h-screen">
         <NavBar/>
-        <div className = "flex flex-col relative top-10 items-center h-1/2">
+        <div className = "flex flex-col flex-grow relative top-10 items-center pb-8">
             <h1 className = "text-4xl p-4">Practice IB Interview Questions</h1>
             <QuestionsList questions = {currentPosts} completedQuestions = {completedQuestions} />
             <Pagination 
@@ -55,6 +60,7 @@ const Questions = () => {
                 currentPage = {currentPage}
             />
         </div>
+        <Footer/>
     </div>
   )
 }

@@ -1,74 +1,64 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate} from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
 import instance from '../../hooks/AxiosInstance';
 import CheckAuth from '../../hooks/CheckAuth';
 import LoginHook from './LoginHook';
+import { AuthContext } from '../../hooks/AuthContext';
 
 const LoginComponent = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [result, setResult] = useState('');
   const [error, setError] = useState('');
-  const [auth, setAuth] = useState({
-    authorized: false,
-    loading: true
-  });
-
-  const hasRendered = useRef(false);
+  const { auth, setAuth } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const authorization = async () => {
-      const response = await CheckAuth();
-      if (response) {
-        setAuth({authorized: true, loading: false});
-      } else {
-        setAuth({authorized: false, loading: false});
-
-      }
+    if (auth.authorized) {
+      navigate("/questions");
     }
-    
-    if (hasRendered.current) {
-      authorization();
-    } else {
-      hasRendered.current = true;
-    }
-    
-  }, [result]);
-
-
-  if (auth.authorized) {
-    return navigate("/questions");
-  }
-
+  }, [auth.authorized, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login logic here
-    let response = await LoginHook( {email: email, password: password} );
-    setResult(response);
-    setPassword('');
-    setError(<div className = "text-red-600">Invalid Credentials</div>);
+    try {
+      let response = await LoginHook({ email: email, password: password });
+      if (response && response.status === 200) {
+        setAuth({ authorized: true, loading: false });
+        navigate('/questions');
+      } else {
+        setResult(response);
+        setPassword('');
+        setError(<div className="text-red-600">Invalid Credentials</div>);
+      }
+    } catch (error) {
+      setError(<div className="text-red-600">An error occurred</div>);
+    }
   };
 
   const handleGoogleLogin = useGoogleLogin({
     flow: 'auth-code',
-    onSuccess: async (tokenResponse) => {
-        try {
-            const response = await instance.post('/api/google-login', {
-                code: tokenResponse,
-            });
-            console.log('Login successful', response.data);
-            } catch (error) {
-            console.error('Error logging in with Google', error);
-            }
-        },
-        onError: error => {
-            console.error('Google login failed', error);
-        },
-    });
+    onSuccess: async (codeResponse) => {
+      try {
+        const response = await instance.post('/api/google-login', {
+          code: codeResponse,
+        });
+        if (response && response.status === 200) {
+          setAuth({ authorized: true, loading: false });
+          navigate('/questions');
+        }
+      } catch (error) {
+        console.error('Error logging in with Google', error);
+        setError(<div className="text-red-600">Google login failed</div>);
+      }
+    },
+    onError: (error) => {
+      console.error('Google login failed', error);
+      setError(<div className="text-red-600">Google login failed</div>);
+    },
+  });
 
   if (result) {
     console.log(result);
