@@ -35,7 +35,13 @@ const Questions = () => {
     }, [])
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (<div className = "flex flex-col w-full min-h-screen">
+      <NavBar/>
+      <div className = "flex flex-grow relative top-10 justify-center text-2xl pb-8">
+        Loading...
+      </div>
+      <Footer/>
+  </div>);
   }
 
   if (error) {

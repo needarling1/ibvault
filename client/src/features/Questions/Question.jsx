@@ -56,12 +56,11 @@ const Question = () => {
     setResult(result['result']);
 
     setAnswerLoading(false);
-    setAnswer('');
   }
 
   
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className = "flex w-full justify-center">Loading...</div>;
   }
 
   if (error) {
