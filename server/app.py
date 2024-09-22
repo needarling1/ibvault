@@ -1,12 +1,13 @@
 import os
 from dotenv import load_dotenv
 
+from datetime import timedelta
+
 from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_migrate import Migrate
-
 from extensions import db, bcrypt
 from routes import questions, question, grade, logger, google_logger, register, check_auth, logout
 
@@ -24,6 +25,7 @@ def create_app():
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = None
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
     
     db.init_app(app)
     bcrypt.init_app(app)

@@ -89,6 +89,7 @@ def login():
 
     user = User.query.filter_by(email=email).first()
     if user and user.password_hash and bcrypt.check_password_hash(user.password_hash, password):
+        session.permanent = True
         session['user_id'] = user.id
         session['email'] = user.email
         return jsonify({'message': 'Logged in successfully', 'user': {
@@ -152,6 +153,7 @@ def google_login():
     user = User.query.filter_by(email=email).first()
 
     if user:
+        session.permanent = True
         session['user_id'] = user.id
         session['email'] = user.email
         user_check = User.query.filter_by(google_id=google_id).first()
