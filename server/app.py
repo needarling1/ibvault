@@ -25,6 +25,8 @@ def create_app():
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = None
+    app.config['SESSION_COOKIE_DOMAIN'] = 'main--ibvault.netlify.app'
+    app.config['SESSION_COOKIE_NAME'] = 'session'
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
     
     db.init_app(app)
