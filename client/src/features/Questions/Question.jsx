@@ -6,6 +6,7 @@ import GradeQuestion from './GradeQuestion';
 import CheckAuth from '../../hooks/CheckAuth';
 import Footer from '../Footer/Footer';
 import LoadingScreen from '../Loading/LoadingScreen';
+import Loading from '../../assets/loading.gif'
 
 
 const Question = () => {
@@ -73,7 +74,7 @@ const Question = () => {
         <NavBar/>
         <div className = "flex flex-col items-center justify-center w-full">
           <h1 className = "text-3xl mt-6">{question.id}. {question.question_name}</h1>
-          <h1 className = "text-2xl mt-12">{question.question}</h1>
+          <h1 className = "text-2xl mt-12 mx-10">{question.question}</h1>
           <form onSubmit = {handleSubmit} className = "flex flex-col items-center w-full" >
             <textarea value = {answer} maxLength={maxChars} onChange = {(e) => setAnswer(e.target.value)} className = "p-2 mt-10 h-72 w-1/2 4xl:w-1/3 border border-solid border-black focus:outline-none" placeholder = "Enter Answer..."/>
             <div className="w-1/2 4xl:w-1/3 text-right text-sm text-gray-600 mt-1">
@@ -89,7 +90,7 @@ const Question = () => {
             </button>          
           </form>
           <div className = "mt-10">
-            {answerLoading && <div className = "text-xl">Loading Result...</div>}
+            {answerLoading && <img src = {Loading} alt = "Loading..." className = "h-10 w-auto"/>}
             {!answerLoading && result && <div className = "text-3xl">Result: {result}</div>}
           </div>
         </div>
