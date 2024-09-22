@@ -1,8 +1,8 @@
-import axios from 'axios';
+import instance from "../../hooks/AxiosInstance";
 
 async function CreateAccountHook( {email, password} ) {
     try {
-        const response = await axios.post('/api/register', {
+        const response = await instance.post('/register', {
             email: email,
             password: password
         });

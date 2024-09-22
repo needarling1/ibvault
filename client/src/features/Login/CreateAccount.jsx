@@ -29,7 +29,7 @@ const CreateAccount = () => {
     flow: 'auth-code',
     onSuccess: async (codeResponse) => {
         try {
-            const response = await instance.post('/api/google-login', {
+            const response = await instance.post('/google-login', {
                 code: codeResponse,
             });
             if (response.status === 200) {

@@ -4,7 +4,7 @@ let isAuthenticated = false;
 
 const CheckAuth = async () => {
     try {
-        const response = await instance.get('/api/check-auth');
+        const response = await instance.get('/check-auth');
         if (response.data.message === 'Authorized') {
           isAuthenticated = true;
           return true;

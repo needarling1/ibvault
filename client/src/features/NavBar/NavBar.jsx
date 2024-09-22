@@ -17,7 +17,7 @@ const NavBar = () => {
 
   const handleLogout = async () => {
     try {
-      await instance.post('/api/logout');
+      await instance.post('/logout');
       const isAuthorized = await CheckAuth();
       setAuth({ authorized: isAuthorized, loading: false })
       navigate("/");

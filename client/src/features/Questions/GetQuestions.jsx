@@ -1,9 +1,9 @@
-import axios from 'axios';
+import instance from "../../hooks/AxiosInstance";
 
 
 async function GetQuestions() {
     try {
-        const response = await axios.get('/api/questions');
+        const response = await instance.get('/questions');
 
         return response.data;
       } catch (error) {

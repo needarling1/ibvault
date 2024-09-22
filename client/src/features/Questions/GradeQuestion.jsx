@@ -2,7 +2,7 @@ import instance from "../../hooks/AxiosInstance";
 
 async function GradeQuestion( {question_id, answer} ) {
     try {
-        const response = await instance.post('/api/questions/grade', {
+        const response = await instance.post('/questions/grade', {
             question_id: question_id,
             answer: answer
         });
