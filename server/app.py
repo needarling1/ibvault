@@ -42,6 +42,10 @@ def create_app():
     app.register_blueprint(check_auth)
     app.register_blueprint(logout)
 
-    CORS(app, supports_credentials=True, origins=['https://main--ibvault.netlify.app', 'http://localhost:5173'])
+    CORS(app, supports_credentials=True, origins=[
+        'https://ibvault.netlify.app',  
+        'https://main--ibvault.netlify.app',  
+        'http://localhost:5173'  
+    ])
 
     return app
