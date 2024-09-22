@@ -36,7 +36,7 @@ const NavBar = () => {
   
   return (
     <div className ="flex h-[8vh] 3xl:h-[8vh] 4xl:h-[6vh] w-full justify-between items-center border-b border-gray-200 border-solid py-5">
-      <div className = "relative ml-20 md:ml-20 l:ml-24 xl:ml-36 2xl:ml-72 3xl:ml-72 4xl:ml-72">
+      <div className = "relative ml-20 md:ml-20 l:ml-24 xl:ml-36 2xl:ml-48 3xl:ml-60 4xl:ml-72">
         <LogoButton/>
       </div>
 
@@ -45,7 +45,7 @@ const NavBar = () => {
         <NavButton text = "Resources" href = "/resources"/>
         <NavButton text = "Support" href = "/Support"/>
       </div>
-      <div className = "mr-20 md:mr-20 l:mr-24 xl:mr-36 2xl:mr-72 3xl:mr-72 4xl:mr-72">
+      <div className = "mr-20 md:mr-20 l:mr-24 xl:mr-36 2xl:mr-48 3xl:mr-60 4xl:mr-72">
         {loginButton}
       </div>
     </div>

@@ -13,6 +13,7 @@ import LoginPage from "./features/Login/LoginPage";
 import CreateAccountPage from "./features/Login/CreateAccountPage";
 import Resources from "./features/Resources/Resources";
 import Support from "./features/Support/Support";
+import Screen404 from "./features/404/404";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
     path: "/support",
     element: <Support />
   },
+  {
+    path: "*",
+    element: <Screen404/>
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(

@@ -5,6 +5,7 @@ import GetQuestion from './GetQuestion';
 import GradeQuestion from './GradeQuestion';
 import CheckAuth from '../../hooks/CheckAuth';
 import Footer from '../Footer/Footer';
+import LoadingScreen from '../Loading/LoadingScreen';
 
 
 const Question = () => {
@@ -60,7 +61,7 @@ const Question = () => {
 
   
   if (loading) {
-    return <div className = "flex w-full justify-center">Loading...</div>;
+    return <LoadingScreen/>;
   }
 
   if (error) {
